@@ -119,8 +119,7 @@ class TitleKey implements
 	 * @return string
 	 */
 	private static function normalize( $text ) {
-		$contentLanguage = MediaWikiServices::getInstance()->getContentLanguage();
-		return $contentLanguage->caseFold( $text );
+		return strtoupper( iconv( 'UTF-8', 'US-ASCII//TRANSLIT', $text ) );
 	}
 
 	// Hook functions....
