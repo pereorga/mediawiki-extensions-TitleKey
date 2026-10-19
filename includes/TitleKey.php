@@ -246,15 +246,28 @@ class TitleKey implements
 		$key = self::normalize( $search );
 
 		$dbr = MediaWikiServices::getInstance()->getConnectionProvider()->getReplicaDatabase();
+		// Match either the start of the title or the start of any word in it.
+		$titlePrefix = new LikeValue( $key, $dbr->anyString() );
+		$wordPrefix = new LikeValue( $dbr->anyString(), ' ', $key, $dbr->anyString() );
+		$keyMatch = $dbr->expr( 'tk_key', IExpression::LIKE, $titlePrefix )
+			->or( 'tk_key', IExpression::LIKE, $wordPrefix );
+		// Rank titles that start with the search term before those that only
+		// contain a matching word.
+		$titleRank = $dbr->conditional(
+			$dbr->expr( 'tk_key', IExpression::LIKE, $titlePrefix ),
+			'0',
+			'1'
+		);
 		$result = $dbr->newSelectQueryBuilder()
 			->select( [ 'page_namespace', 'page_title' ] )
+			->field( $titleRank, 'title_rank' )
 			->from( 'page' )
 			->join( 'titlekey', null, 'tk_page=page_id' )
 			->where( [
 				'tk_namespace' => $ns,
-				$dbr->expr( 'tk_key', IExpression::LIKE, new LikeValue( $key, $dbr->anyString() ) ),
+				$keyMatch,
 			] )
-			->orderBy( 'tk_key' )
+			->orderBy( [ 'title_rank', 'tk_key' ] )
 			->limit( $limit )
 			->offset( $offset )
 			->caller( __METHOD__ )

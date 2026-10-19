@@ -2,7 +2,8 @@ This extension provides case-insensitive matches for a few points in
 MediaWiki's functionality:
 
 * "go" exact title matches
-* Prefix-based searches in OpenSearch (Firefox plugin) and internal AJAX searches
+* Prefix-based searches in OpenSearch (Firefox plugin) and internal AJAX searches,
+matching the start of the title or the start of any word in it
 
 It does not provide complete case-insensitivity for title linking within the wiki.
 
