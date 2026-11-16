@@ -7,6 +7,14 @@ matching the start of the title or the start of any word in it
 
 It does not provide complete case-insensitivity for title linking within the wiki.
 
+== Fork Differences ==
+
+This fork includes the following enhancements compared to upstream:
+
+* Accent-insensitive search: Normalizes titles using ASCII transliteration (`iconv` with `US-ASCII//TRANSLIT`) so searches match regardless of accents or diacritics.
+* Word prefix matching: Matches queries against either the beginning of the title or the start of any word within the title (rather than only the start of the title).
+* Relevance ranking: Results starting with the search prefix are ranked and sorted before those that only match an inner word.
+
 == Database schema ==
 
 A 'titlekey' table is added to the wiki's database, which maintains a case-folded
